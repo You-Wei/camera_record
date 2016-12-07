@@ -22,6 +22,7 @@ import java.util.Locale;
 
 
 public class MainActivity extends Activity {
+    public final String S_TAG = "MainActivity";
 
     private Uri fileUri;
     public static final int MEDIA_TYPE_VIDEO = 2;
@@ -76,7 +77,8 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_CAPTURE_VIDEO_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                previewVideo();
+                Log.d(S_TAG, data.toString());
+                previewVideo(data);
             } else if (resultCode == RESULT_CANCELED) {
                 Toast.makeText(getApplicationContext(),
                         "Video Recording cancelled", Toast.LENGTH_SHORT).show();
@@ -87,10 +89,11 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void previewVideo() {
+    private void previewVideo(Intent data) {
+        Log.d(S_TAG, data.getData().toString());
         try {
             videoPreview.setVisibility(View.VISIBLE);
-            videoPreview.setVideoPath(fileUri.getPath());
+            videoPreview.setVideoURI(data.getData());
             videoPreview.start();
         } catch (Exception e) {
             e.printStackTrace();
@@ -99,10 +102,10 @@ public class MainActivity extends Activity {
 
     private void recordVideo() {
         Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
-        Log.d("aaa", fileUri.toString());
+//        fileUri = getOutputMediaFileUri(MEDIA_TYPE_VIDEO);
+//        Log.d("aaa", fileUri.toString());
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
+//        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
         startActivityForResult(intent, CAMERA_CAPTURE_VIDEO_REQUEST_CODE);
     }
 
