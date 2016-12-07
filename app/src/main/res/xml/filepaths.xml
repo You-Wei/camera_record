@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
-<files-path name="Camera_Stream" path="Pictures/"/>
+<files-path name="Camera_Stream" path="Video/"/>
 </paths>
