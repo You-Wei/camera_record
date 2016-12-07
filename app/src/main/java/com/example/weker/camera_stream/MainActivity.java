@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     private static final int CAMERA_CAPTURE_VIDEO_REQUEST_CODE = 200;
     private Button btnRecord;
     private VideoView videoPreview;
-    private static final String IMAGE_DIRECTORY_NAME = "Camera Stream";
+    private static final String VIDEO_DIRECTORY_NAME = "Camera Stream";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,20 +72,6 @@ public class MainActivity extends Activity {
         fileUri = savedInstanceState.getParcelable("file_uri");
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == CAMERA_CAPTURE_VIDEO_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                previewVideo();
-            } else if (resultCode == RESULT_CANCELED) {
-                Toast.makeText(getApplicationContext(),
-                        "Video Recording cancelled", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getApplicationContext(),
-                        "Failed to record video", Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
 
     private void previewVideo() {
         try {
@@ -106,31 +92,45 @@ public class MainActivity extends Activity {
         startActivityForResult(intent, CAMERA_CAPTURE_VIDEO_REQUEST_CODE);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == CAMERA_CAPTURE_VIDEO_REQUEST_CODE && resultCode == RESULT_OK) {
+        previewVideo();
+        } else if (resultCode == RESULT_CANCELED) {
+            Toast.makeText(getApplicationContext(),
+                    "Video Recording cancelled", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(),
+                    "Failed to record video", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     public Uri getOutputMediaFileUri(int type) {
-        //return Uri.fromFile(getOutputMediaFile(type));
         ContentValues values = new ContentValues(1);
-        values.put(MediaStore.Images.Media.MIME_TYPE, "Pictures/"+IMAGE_DIRECTORY_NAME);
-        Uri mCameraTempUri = this.getContentResolver()
-                .insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        values.put(MediaStore.Video.Media.MIME_TYPE, "Video/" + VIDEO_DIRECTORY_NAME);
+        Uri mCameraTempUri = this.getContentResolver().insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI, values);
+        //return Uri.fromFile(getOutputMediaFile(type));
         return mCameraTempUri;
     }
 
+
     private static File getOutputMediaFile(int type) {
 
-        File mediaStorageDir = new File(
+        File vidDir = new File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                IMAGE_DIRECTORY_NAME);
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.d(IMAGE_DIRECTORY_NAME, "Oops! Failed create "
-                        + IMAGE_DIRECTORY_NAME + " directory");
+                VIDEO_DIRECTORY_NAME);
+        if (!vidDir.exists()) {
+            if (!vidDir.mkdirs()) {
+                Log.d(VIDEO_DIRECTORY_NAME, "Oops! Failed create "
+                        + VIDEO_DIRECTORY_NAME + " directory");
                 return null;
             }
         }
+
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         File mediaFile;
         if (type == MEDIA_TYPE_VIDEO) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator
+            mediaFile = new File(vidDir.getPath() + File.separator
                     + "VID_" + timeStamp + ".mp4");
         } else {
             return null;
